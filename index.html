@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VetSystem Professional - Pruebas de Automatización</title>
+  <!-- Tailwind CSS para diseño elegante e institucional -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Transiciones suaves para cambios de pestaña */
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+  <!-- ========================================================= -->
+  <!-- 1. COMPONENTE DE LOGIN (PANTALLA INICIAL) -->
+  <!-- ========================================================= -->
+  <div id="login-section" class="hidden flex-grow flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-2xl max-w-md w-full fade-in">
+      <div class="text-center mb-6">
+        <span class="text-4xl">🐾</span>
+        <h2 class="text-2xl font-bold text-teal-400 mt-2">VET-SYSTEM</h2>
+        <p class="text-slate-400 text-sm mt-1">Iniciar sesión en la plataforma institucional</p>
+      </div>
+
+      <!-- Credenciales pre-cargadas para Selenium -->
+      <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Correo Electrónico</label>
+          <input 
+            type="email" 
+            id="login-email" 
+            required 
+            value="fdv.cajias@yavirac.edu.ec"
+            placeholder="usuario@yavirac.edu.ec" 
+            class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+          >
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Contraseña</label>
+          <input 
+            type="password" 
+            id="login-password" 
+            required 
+            value="123456"
+            placeholder="••••••••••••" 
+            class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+          >
+        </div>
+
+        <button 
+          type="submit" 
+          id="btn-login-submit" 
+          class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 rounded-lg transition-colors shadow-lg shadow-teal-900/30 flex justify-center items-center gap-2"
+        >
+          🔐 Ingresar al Sistema
+        </button>
+      </form>
+
+      <div class="mt-4 text-center">
+        <span class="text-xs text-slate-400">¿No tienes cuenta? <a href="#" id="link-registro" onclick="showNotification('Módulo de registro en mantenimiento temporal.')" class="text-teal-400 hover:underline">Regístrate aquí</a></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PLATAFORMA PRINCIPAL (OCULTA HASTA LOGUEARSE) -->
+  <!-- ========================================================= -->
+  <div id="main-platform" class="hidden flex-grow flex flex-col md:flex-row">
+    
+    <!-- BARRA LATERAL (MENU DE COMPONENTES CON ENLACES REALES) -->
+    <aside class="w-full md:w-64 bg-slate-950 border-r border-slate-800 p-6 flex flex-col justify-between">
+      <div class="space-y-6">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">🐾</span>
+          <div>
+            <h1 class="font-bold text-teal-400">VET-SYSTEM</h1>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Panel Administrativo</p>
+          </div>
+        </div>
+
+        <nav class="space-y-1">
+          <!-- COMPONENTE 1: DASHBOARD -->
+          <a 
+            id="btn-comp-dashboard" 
+            href="#dashboard" 
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-semibold transition-all text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+          >
+            📊 Dashboard General
+          </a>
+          
+          <!-- COMPONENTE 2: REGISTRO DE MASCOTAS -->
+          <a 
+            id="btn-comp-mascotas" 
+            href="#mascotas" 
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-semibold transition-all text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+          >
+            🐶 Ficha de Pacientes
+          </a>
+          
+          <!-- COMPONENTE 3: AGENDA DE CITAS -->
+          <a 
+            id="btn-comp-citas" 
+            href="#citas" 
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-semibold transition-all text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+          >
+            📅 Reservar Citas
+          </a>
+
+          <!-- NUEVO COMPONENTE 4: INVENTARIO DE MEDICAMENTOS -->
+          <a 
+            id="btn-comp-inventario" 
+            href="#inventario" 
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-semibold transition-all text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+          >
+            💊 Inventario Clínico
+          </a>
+        </nav>
+      </div>
+
+      <!-- PERFIL DE USUARIO -->
+      <div class="border-t border-slate-800 pt-4 mt-6">
+        <div class="flex items-center justify-between">
+          <div class="overflow-hidden">
+            <p id="user-display-email" class="text-xs font-semibold text-slate-300 truncate w-36">usuario@yavirac.edu.ec</p>
+            <span class="text-[10px] bg-teal-900/50 text-teal-400 border border-teal-800/50 px-2 py-0.5 rounded-full">Admin</span>
+          </div>
+          <button 
+            id="btn-logout" 
+            onclick="handleLogout()" 
+            class="text-slate-400 hover:text-red-400 p-1.5 rounded transition-colors" 
+            title="Cerrar Sesión"
+          >
+            🚪 Exit
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- AREA DE TRABAJO DINÁMICA -->
+    <main class="flex-grow p-6 md:p-8 space-y-6 max-w-6xl mx-auto w-full overflow-y-auto">
+
+      <!-- ========================================== -->
+      <!-- COMPONENTE 1: PANELES DEL DASHBOARD -->
+      <!-- ========================================== -->
+      <section id="view-dashboard" class="hidden space-y-6 fade-in">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div>
+            <h2 class="text-2xl font-bold text-white">Dashboard Principal</h2>
+            <p class="text-slate-400 text-sm">Resumen de actividades de la clínica veterinaria</p>
+          </div>
+          <span class="text-sm bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700" id="date-badge">Control de Calidad (QA)</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400 uppercase">Mascotas Totales</span>
+              <span class="text-2xl">🐾</span>
+            </div>
+            <p id="counter-mascotas" class="text-3xl font-bold text-white mt-2">0</p>
+          </div>
+
+          <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400 uppercase">Citas Agendadas</span>
+              <span class="text-2xl">📅</span>
+            </div>
+            <p id="counter-citas" class="text-3xl font-bold text-teal-400 mt-2">0</p>
+          </div>
+
+          <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400 uppercase">Insumos en Stock</span>
+              <span class="text-2xl">💊</span>
+            </div>
+            <p id="counter-inventario" class="text-3xl font-bold text-teal-400 mt-2">0</p>
+          </div>
+
+          <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-400 uppercase">Estado QA</span>
+              <span class="text-2xl">🤖</span>
+            </div>
+            <p class="text-sm font-bold text-emerald-400 mt-2 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping"></span> Activo para Selenium
+            </p>
+          </div>
+        </div>
+
+        <!-- TABLA RESUMEN DE REGISTROS -->
+        <div class="bg-slate-800 rounded-xl border border-slate-700 p-6">
+          <h3 class="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">🐶 Últimas Mascotas Registradas (Base de Datos Local)</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-300">
+              <thead class="bg-slate-950 text-slate-400 text-xs uppercase border-b border-slate-800">
+                <tr>
+                  <th class="px-4 py-3">Nombre</th>
+                  <th class="px-4 py-3">Especie</th>
+                  <th class="px-4 py-3">Edad</th>
+                  <th class="px-4 py-3">Propietario</th>
+                </tr>
+              </thead>
+              <tbody id="summary-table-body" class="divide-y divide-slate-800">
+                <!-- Se llenará dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- COMPONENTE 2: REGISTRO DE PACIENTES -->
+      <!-- ========================================== -->
+      <section id="view-mascotas" class="hidden space-y-6 fade-in">
+        <div class="border-b border-slate-800 pb-4">
+          <h2 class="text-2xl font-bold text-white">Ficha de Pacientes</h2>
+          <p class="text-slate-400 text-sm">Registra una nueva mascota en la base de datos veterinaria</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Formulario -->
+          <div class="lg:col-span-1 bg-slate-800 p-6 rounded-xl border border-slate-700 h-fit">
+            <h3 class="text-md font-bold text-teal-400 mb-4">Añadir Paciente</h3>
+            <form id="pet-form" onsubmit="handlePetRegister(event)" class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-2">Nombre de la Mascota</label>
+                <input 
+                  type="text" 
+                  id="pet-name" 
+                  required 
+                  placeholder="Ej: Firulais" 
+                  class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-2">Especie</label>
+                <select 
+                  id="pet-species" 
+                  class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                >
+                  <option value="Perro">🐶 Perro</option>
+                  <option value="Gato">🐱 Gato</option>
+                  <option value="Loro">🦜 Ave / Loro</option>
+                  <option value="Conejo">🐰 Conejo</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-2">Edad (Años)</label>
+                <input 
+                  type="number" 
+                  id="pet-age" 
+                  required 
+                  min="0" 
+                  max="30" 
+                  placeholder="Ej: 3" 
+                  class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-2">Nombre del Propietario</label>
+                <input 
+                  type="text" 
+                  id="owner-name" 
+                  required 
+                  placeholder="Ej: Fernando Cajias" 
+                  class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                >
+              </div>
+
+              <button 
+                type="submit" 
+                id="btn-save-pet" 
+                class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2 rounded-lg transition-colors shadow-lg"
+              >
+                📥 Guardar Mascota
+              </button>
+            </form>
+          </div>
+
+          <!-- Listado Principal -->
+          <div class="lg:col-span-2 bg-slate-800 p-6 rounded-xl border border-slate-700">
+            <h3 class="text-md font-bold text-slate-200 mb-4">Listado de Pacientes</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-300">
+                <thead class="bg-slate-950 text-slate-400 text-xs uppercase border-b border-slate-800">
+                  <tr>
+                    <th class="px-4 py-3">Mascota</th>
+                    <th class="px-4 py-3">Especie</th>
+                    <th class="px-4 py-3">Edad</th>
+                    <th class="px-4 py-3">Dueño</th>
+                  </tr>
+                </thead>
+                <tbody id="pet-table-body" class="divide-y divide-slate-800">
+                  <!-- Se cargará desde localStorage -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- COMPONENTE 3: AGENDA DE CITAS -->
+      <!-- ========================================== -->
+      <section id="view-citas" class="hidden space-y-6 fade-in">
+        <div class="border-b border-slate-800 pb-4">
+          <h2 class="text-2xl font-bold text-white">Planificación de Citas</h2>
+          <p class="text-slate-400 text-sm">Organiza y agenda las consultas médicas de los pacientes</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Formulario -->
+          <div class="lg:col-span-1 bg-slate-800 p-6 rounded-xl border border-slate-700 h-fit">
+            <h3 class="text-md font-bold text-teal-400 mb-4">Agendar Nueva Cita</h3>
+            <form id="appointment-form" onsubmit="handleAppointmentRegister(event)" class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-2">Seleccionar Mascota</label>
+                <select 
+                  id="appoint-pet" 
+                  required
+                  class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                >
+                  <!-- Cargado dinámicamente -->
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-2">Fecha</label>
+                <input 
+                  type="date" 
+                  id="appoint-date" 
+                  required 
+                  class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-2">Hora</label>
+                <input 
+                  type="time" 
+                  id="appoint-time" 
+                  required 
+                  class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-2">Motivo Médico</label>
+                <input 
+                  type="text" 
+                  id="appoint-reason" 
+                  required 
+                  placeholder="Ej: Control de Vacunas" 
+                  class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                >
+              </div>
+
+              <button 
+                type="submit" 
+                id="btn-save-appointment" 
+                class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2 rounded-lg transition-colors shadow-lg"
+              >
+                📅 Agendar Turno
+              </button>
+            </form>
+          </div>
+
+          <!-- Listado Citas -->
+          <div class="lg:col-span-2 bg-slate-800 p-6 rounded-xl border border-slate-700">
+            <h3 class="text-md font-bold text-slate-200 mb-4">Citas Confirmadas</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-300">
+                <thead class="bg-slate-950 text-slate-400 text-xs uppercase border-b border-slate-800">
+                  <tr>
+                    <th class="px-4 py-3">Mascota</th>
+                    <th class="px-4 py-3">Fecha y Hora</th>
+                    <th class="px-4 py-3">Motivo</th>
+                  </tr>
+                </thead>
+                <tbody id="appoint-table-body" class="divide-y divide-slate-800">
+                  <!-- Se cargará desde localStorage -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- NUEVO COMPONENTE 4: INVENTARIO CLÍNICO -->
+      <!-- ========================================== -->
+      <section id="view-inventario" class="hidden space-y-6 fade-in">
+        <div class="border-b border-slate-800 pb-4">
+          <h2 class="text-2xl font-bold text-white">Inventario de Medicamentos</h2>
+          <p class="text-slate-400 text-sm">Gestiona el stock de vacunas, fármacos e insumos médicos</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Formulario -->
+          <div class="lg:col-span-1 bg-slate-800 p-6 rounded-xl border border-slate-700 h-fit">
+            <h3 class="text-md font-bold text-teal-400 mb-4">Añadir Insumo</h3>
+            <form id="inventory-form" onsubmit="handleInventoryRegister(event)" class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-2">Nombre del Medicamento/Insumo</label>
+                <input 
+                  type="text" 
+                  id="inv-name" 
+                  required 
+                  placeholder="Ej: Amoxicilina 250mg" 
+                  class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-2">Categoría</label>
+                <select 
+                  id="inv-category" 
+                  class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                >
+                  <option value="Antibióticos">💊 Antibiótico</option>
+                  <option value="Vacunas">💉 Vacuna</option>
+                  <option value="Antiparasitarios">🦠 Antiparasitario</option>
+                  <option value="Analgésicos">🩹 Analgésico</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-2">Cantidad Inicial</label>
+                <input 
+                  type="number" 
+                  id="inv-stock" 
+                  required 
+                  min="1" 
+                  placeholder="Ej: 50" 
+                  class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                >
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-2">Unidad de Medida</label>
+                <input 
+                  type="text" 
+                  id="inv-unit" 
+                  required 
+                  placeholder="Ej: Pastillas, Frascos, Ampollas" 
+                  class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+                >
+              </div>
+
+              <button 
+                type="submit" 
+                id="btn-save-inventory" 
+                class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2 rounded-lg transition-colors shadow-lg"
+              >
+                📦 Registrar Stock
+              </button>
+            </form>
+          </div>
+
+          <!-- Listado de Inventario -->
+          <div class="lg:col-span-2 bg-slate-800 p-6 rounded-xl border border-slate-700">
+            <h3 class="text-md font-bold text-slate-200 mb-4">Stock de Farmacia Veterinaria</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-300">
+                <thead class="bg-slate-950 text-slate-400 text-xs uppercase border-b border-slate-800">
+                  <tr>
+                    <th class="px-4 py-3">Nombre Insumo</th>
+                    <th class="px-4 py-3">Categoría</th>
+                    <th class="px-4 py-3">Cantidad</th>
+                    <th class="px-4 py-3">Unidad</th>
+                  </tr>
+                </thead>
+                <tbody id="inventory-table-body" class="divide-y divide-slate-800">
+                  <!-- Se cargará desde localStorage -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- NOTIFICACIÓN TIPO TOAST (Para evitar alertas invasivas del navegador en Selenium) -->
+  <div id="toast" class="fixed bottom-4 right-4 bg-teal-800 border border-teal-500 text-white px-5 py-3 rounded-xl shadow-2xl transition-all duration-300 opacity-0 pointer-events-none flex items-center gap-3">
+    <span class="text-lg">📢</span>
+    <span id="toast-message" class="text-sm font-semibold">¡Operación exitosa!</span>
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <footer class="bg-slate-950 border-t border-slate-800 text-center py-3 text-xs text-slate-500">
+    <p>&copy; 2026 VetSystem - Instituto Superior Tecnológico Yavirac. Entorno de Pruebas de Calidad (QA).</p>
+  </footer>
+
+  <!-- ========================================================= -->
+  <!-- LÓGICA DE PROGRAMACIÓN CON ALTO SOPORTE DE PERSISTENCIA Y RUTAS -->
+  <!-- ========================================================= -->
+  <script>
+    // --- DATOS QUEMADOS INICIALES (SEEDING) ---
+    const initialPets = [
+      { name: "Max", species: "Perro", age: "3", owner: "Fernando Cajias" },
+      { name: "Luna", species: "Gato", age: "2", owner: "Ariel Lopez" },
+      { name: "Coco", species: "Loro", age: "5", owner: "Jordy Gomez" }
+    ];
+
+    const initialAppointments = [
+      { pet: "Max", date: "2026-06-28", time: "09:30", reason: "Vacunación Anual" },
+      { pet: "Luna", date: "2026-06-29", time: "11:00", reason: "Desparasitación" }
+    ];
+
+    const initialInventory = [
+      { name: "Amoxicilina Canina 250mg", category: "Antibióticos", stock: "60", unit: "Pastillas" },
+      { name: "Vacuna Triple Felina", category: "Vacunas", stock: "15", unit: "Frascos" },
+      { name: "FleaOut Antipulgas", category: "Antiparasitarios", stock: "40", unit: "Ampollas" }
+    ];
+
+    // Variables de Estado en Memoria (Cargadas desde localStorage)
+    let pets = JSON.parse(localStorage.getItem('pets')) || [];
+    let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+    // Si localStorage está completamente vacío, inyectamos los datos quemados para la demostración
+    if (pets.length === 0 && appointments.length === 0 && inventory.length === 0) {
+      pets = initialPets;
+      appointments = initialAppointments;
+      inventory = initialInventory;
+      saveAllData();
+    }
+
+    // Guardar colecciones completas en localStorage
+    function saveAllData() {
+      localStorage.setItem('pets', JSON.stringify(pets));
+      localStorage.setItem('appointments', JSON.stringify(appointments));
+      localStorage.setItem('inventory', JSON.stringify(inventory));
+    }
+
+    // --- ENRUTADOR CLIENT-SIDE (Navegación realista para URL) ---
+    function router() {
+      const hash = window.location.hash || '#login';
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+      if (!isLoggedIn) {
+        // Forzar sección de Login si no está autenticado
+        window.location.hash = '#login';
+        document.getElementById('login-section').classList.remove('hidden');
+        document.getElementById('main-platform').classList.add('hidden');
+      } else {
+        // Si está autenticado e intenta ir a #login, lo redirigimos al #dashboard
+        if (hash === '#login') {
+          window.location.hash = '#dashboard';
+          return;
+        }
+
+        // Mostrar panel principal
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('main-platform').classList.remove('hidden');
+
+        // Actualizar datos del usuario actual en pantalla
+        const loggedUser = localStorage.getItem('loggedUser') || 'fdv.cajias@yavirac.edu.ec';
+        document.getElementById('user-display-email').innerText = loggedUser;
+
+        // Ocultar todas las secciones operacionales
+        const views = ['view-dashboard', 'view-mascotas', 'view-citas', 'view-inventario'];
+        views.forEach(viewId => document.getElementById(viewId).classList.add('hidden'));
+
+        // Desmarcar todos los enlaces del sidebar
+        const buttons = ['btn-comp-dashboard', 'btn-comp-mascotas', 'btn-comp-citas', 'btn-comp-inventario'];
+        buttons.forEach(btnId => {
+          document.getElementById(btnId).className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-semibold transition-all text-slate-400 hover:bg-slate-900 hover:text-slate-200";
+        });
+
+        // Activar la vista actual basada en el HASH de la URL
+        if (hash === '#dashboard') {
+          document.getElementById('view-dashboard').classList.remove('hidden');
+          document.getElementById('btn-comp-dashboard').className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-semibold transition-all bg-teal-950/40 text-teal-400 border border-teal-800/50";
+          renderDashboard();
+        } else if (hash === '#mascotas') {
+          document.getElementById('view-mascotas').classList.remove('hidden');
+          document.getElementById('btn-comp-mascotas').className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-semibold transition-all bg-teal-950/40 text-teal-400 border border-teal-800/50";
+          renderMascotas();
+        } else if (hash === '#citas') {
+          document.getElementById('view-citas').classList.remove('hidden');
+          document.getElementById('btn-comp-citas').className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-semibold transition-all bg-teal-950/40 text-teal-400 border border-teal-800/50";
+          renderCitas();
+        } else if (hash === '#inventario') {
+          document.getElementById('view-inventario').classList.remove('hidden');
+          document.getElementById('btn-comp-inventario').className = "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-semibold transition-all bg-teal-950/40 text-teal-400 border border-teal-800/50";
+          renderInventario();
+        }
+      }
+    }
+
+    // Inicialización al cargar la ventana
+    window.onload = function() {
+      router();
+    };
+
+    // Escuchar cambios de hash en la URL para navegación fluida
+    window.addEventListener('hashchange', router);
+
+    // --- FUNCIÓN TOAST DE ÉXITO (No bloquea los hilos de Selenium) ---
+    function showNotification(text) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.innerText = text;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 3000);
+    }
+
+    // --- COMPONENTE DE AUTENTICACIÓN ---
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('login-email').value;
+      
+      // Guardar estados en el navegador
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('loggedUser', email);
+      
+      showNotification('Inicio de sesión exitoso. Cargando paneles...');
+      
+      // Mover URL al Dashboard
+      window.location.hash = '#dashboard';
+    }
+
+    function handleLogout() {
+      // Limpiar estados de sesión en localStorage
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('loggedUser');
+      
+      showNotification('Sesión institucional finalizada.');
+      
+      // Regresar al Login mediante HASH
+      window.location.hash = '#login';
+    }
+
+    // --- COMPONENTE 1: RENDER DE DASHBOARD ---
+    function renderDashboard() {
+      // Actualizar contadores dinámicos
+      document.getElementById('counter-mascotas').innerText = pets.length;
+      document.getElementById('counter-citas').innerText = appointments.length;
+      
+      // Sumar todos los medicamentos en stock
+      const totalStock = inventory.reduce((acc, curr) => acc + parseInt(curr.stock || 0), 0);
+      document.getElementById('counter-inventario').innerText = totalStock;
+
+      // Renderizar tabla resumen
+      const summaryBody = document.getElementById('summary-table-body');
+      
+      if (pets.length === 0) {
+        summaryBody.innerHTML = `
+          <tr>
+            <td colspan="4" class="px-4 py-8 text-center text-slate-500 italic">No hay pacientes guardados en la base de datos local.</td>
+          </tr>`;
+        return;
+      }
+
+      // Tomar las últimas 4 mascotas registradas
+      const lastPets = [...pets].slice(-4).reverse();
+      let summaryHTML = '';
+      lastPets.forEach(pet => {
+        summaryHTML += `
+          <tr class="hover:bg-slate-900 transition-colors">
+            <td class="px-4 py-3 font-semibold text-white">${pet.name}</td>
+            <td class="px-4 py-3 text-slate-400">${pet.species}</td>
+            <td class="px-4 py-3 text-slate-400">${pet.age} años</td>
+            <td class="px-4 py-3 text-slate-300">${pet.owner}</td>
+          </tr>`;
+      });
+      summaryBody.innerHTML = summaryHTML;
+    }
+
+    // --- COMPONENTE 2: FICHA DE PACIENTES ---
+    function renderMascotas() {
+      const petTableBody = document.getElementById('pet-table-body');
+      
+      if (pets.length === 0) {
+        petTableBody.innerHTML = `
+          <tr>
+            <td colspan="4" class="px-4 py-8 text-center text-slate-500 italic">No se han registrado pacientes. Registre 5 mascotas para su prueba de QA.</td>
+          </tr>`;
+        return;
+      }
+
+      let petsHTML = '';
+      [...pets].reverse().forEach(pet => {
+        petsHTML += `
+          <tr class="hover:bg-slate-900/50 transition-colors">
+            <td class="px-4 py-3 font-semibold text-white">${pet.name}</td>
+            <td class="px-4 py-3 text-slate-400">${pet.species}</td>
+            <td class="px-4 py-3 text-slate-400">${pet.age} años</td>
+            <td class="px-4 py-3 text-slate-300">${pet.owner}</td>
+          </tr>`;
+      });
+      petTableBody.innerHTML = petsHTML;
+    }
+
+    function handlePetRegister(event) {
+      event.preventDefault();
+      const name = document.getElementById('pet-name').value;
+      const species = document.getElementById('pet-species').value;
+      const age = document.getElementById('pet-age').value;
+      const owner = document.getElementById('owner-name').value;
+
+      // Agregar a memoria, guardar e impactar UI
+      pets.push({ name, species, age, owner });
+      saveAllData();
+      renderMascotas();
+
+      // Limpiar formulario
+      document.getElementById('pet-form').reset();
+      showNotification(`Mascota "${name}" agregada con éxito a base de datos.`);
+    }
+
+    // --- COMPONENTE 3: RESERVAR CITAS ---
+    function renderCitas() {
+      const select = document.getElementById('appoint-pet');
+      const appointTableBody = document.getElementById('appoint-table-body');
+
+      // Cargar mascotas en el select dinámico
+      select.innerHTML = '<option value="">-- Elige un Paciente --</option>';
+      pets.forEach(pet => {
+        select.innerHTML += `<option value="${pet.name}">${pet.name} (${pet.species})</option>`;
+      });
+
+      if (appointments.length === 0) {
+        appointTableBody.innerHTML = `
+          <tr>
+            <td colspan="3" class="px-4 py-8 text-center text-slate-500 italic">No hay citas médicas agendadas para hoy.</td>
+          </tr>`;
+        return;
+      }
+
+      let appointmentsHTML = '';
+      [...appointments].reverse().forEach(app => {
+        appointmentsHTML += `
+          <tr class="hover:bg-slate-900/50 transition-colors">
+            <td class="px-4 py-3 font-semibold text-white">🐶 ${app.pet}</td>
+            <td class="px-4 py-3 text-teal-400">${app.date} | ⏰ ${app.time}</td>
+            <td class="px-4 py-3 text-slate-300">${app.reason}</td>
+          </tr>`;
+      });
+      appointTableBody.innerHTML = appointmentsHTML;
+    }
+
+    function handleAppointmentRegister(event) {
+      event.preventDefault();
+      const pet = document.getElementById('appoint-pet').value;
+      const date = document.getElementById('appoint-date').value;
+      const time = document.getElementById('appoint-time').value;
+      const reason = document.getElementById('appoint-reason').value;
+
+      if (!pet) {
+        showNotification('❌ Error: Debe seleccionar primero un paciente.');
+        return;
+      }
+
+      // Guardar cita
+      appointments.push({ pet, date, time, reason });
+      saveAllData();
+      renderCitas();
+
+      // Resetear campos
+      document.getElementById('appointment-form').reset();
+      showNotification(`Cita médica agendada para "${pet}".`);
+    }
+
+    // --- COMPONENTE 4: INVENTARIO CLÍNICO ---
+    function renderInventario() {
+      const invTableBody = document.getElementById('inventory-table-body');
+
+      if (inventory.length === 0) {
+        invTableBody.innerHTML = `
+          <tr>
+            <td colspan="4" class="px-4 py-8 text-center text-slate-500 italic">No hay medicamentos en el inventario clínico.</td>
+          </tr>`;
+        return;
+      }
+
+      let invHTML = '';
+      [...inventory].reverse().forEach(item => {
+        invHTML += `
+          <tr class="hover:bg-slate-900/50 transition-colors">
+            <td class="px-4 py-3 font-semibold text-white">${item.name}</td>
+            <td class="px-4 py-3 text-slate-400">${item.category}</td>
+            <td class="px-4 py-3 text-teal-400 font-bold">${item.stock}</td>
+            <td class="px-4 py-3 text-slate-300">${item.unit}</td>
+          </tr>`;
+      });
+      invTableBody.innerHTML = invHTML;
+    }
+
+    function handleInventoryRegister(event) {
+      event.preventDefault();
+      const name = document.getElementById('inv-name').value;
+      const category = document.getElementById('inv-category').value;
+      const stock = document.getElementById('inv-stock').value;
+      const unit = document.getElementById('inv-unit').value;
+
+      // Guardar insumo
+      inventory.push({ name, category, stock, unit });
+      saveAllData();
+      renderInventario();
+
+      // Resetear campos
+      document.getElementById('inventory-form').reset();
+      showNotification(`Medicamento "${name}" añadido al stock.`);
+    }
+  </script>
+</body>
+</html>
