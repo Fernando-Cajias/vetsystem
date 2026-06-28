@@ -30,7 +30,7 @@
         <p class="text-slate-400 text-sm mt-1">Iniciar sesión en la plataforma institucional</p>
       </div>
 
-      <!-- Credenciales pre-cargadas para Selenium -->
+      <!-- Campos vacíos por defecto listos para digitar -->
       <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Correo Electrónico</label>
@@ -38,7 +38,6 @@
             type="email" 
             id="login-email" 
             required 
-            value="fdv.cajias@yavirac.edu.ec"
             placeholder="usuario@yavirac.edu.ec" 
             class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
           >
@@ -49,7 +48,6 @@
             type="password" 
             id="login-password" 
             required 
-            value="123456"
             placeholder="••••••••••••" 
             class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
           >
@@ -65,7 +63,75 @@
       </form>
 
       <div class="mt-4 text-center">
-        <span class="text-xs text-slate-400">¿No tienes cuenta? <a href="#" id="link-registro" onclick="showNotification('Módulo de registro en mantenimiento temporal.')" class="text-teal-400 hover:underline">Regístrate aquí</a></span>
+        <span class="text-xs text-slate-400">¿No tienes cuenta? <a href="#register" id="link-registro" class="text-teal-400 hover:underline">Regístrate aquí</a></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- 2. COMPONENTE DE REGISTRO DE USUARIOS -->
+  <!-- ========================================================= -->
+  <div id="register-section" class="hidden flex-grow flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 p-8 rounded-2xl shadow-2xl max-w-md w-full fade-in">
+      <div class="text-center mb-6">
+        <span class="text-4xl">📝</span>
+        <h2 class="text-2xl font-bold text-teal-400 mt-2">REGISTRO DE PERSONAL</h2>
+        <p class="text-slate-400 text-sm mt-1">Crea una cuenta para acceder a la base de datos</p>
+      </div>
+
+      <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Nombre Completo</label>
+          <input 
+            type="text" 
+            id="reg-name" 
+            required 
+            placeholder="Ej: Fernando Cajias" 
+            class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+          >
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Correo Institucional</label>
+          <input 
+            type="email" 
+            id="reg-email" 
+            required 
+            placeholder="correo@yavirac.edu.ec" 
+            class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+          >
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Contraseña</label>
+          <input 
+            type="password" 
+            id="reg-password" 
+            required 
+            placeholder="Mínimo 5 caracteres" 
+            class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+          >
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Rol Asignado</label>
+          <select 
+            id="reg-role" 
+            class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-teal-500 transition-colors"
+          >
+            <option value="Recepcionista">Recepcionista</option>
+            <option value="Veterinario">Veterinario</option>
+          </select>
+        </div>
+
+        <button 
+          type="submit" 
+          id="btn-register-submit" 
+          class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 rounded-lg transition-colors shadow-lg shadow-teal-900/30 flex justify-center items-center gap-2"
+        >
+          📥 Registrarme y Volver al Login
+        </button>
+      </form>
+
+      <div class="mt-4 text-center">
+        <span class="text-xs text-slate-400">¿Ya tienes cuenta? <a href="#login" class="text-teal-400 hover:underline">Iniciar Sesión</a></span>
       </div>
     </div>
   </div>
@@ -114,7 +180,7 @@
             📅 Reservar Citas
           </a>
 
-          <!-- NUEVO COMPONENTE 4: INVENTARIO DE MEDICAMENTOS -->
+          <!-- COMPONENTE 4: INVENTARIO DE MEDICAMENTOS -->
           <a 
             id="btn-comp-inventario" 
             href="#inventario" 
@@ -130,12 +196,12 @@
         <div class="flex items-center justify-between">
           <div class="overflow-hidden">
             <p id="user-display-email" class="text-xs font-semibold text-slate-300 truncate w-36">usuario@yavirac.edu.ec</p>
-            <span class="text-[10px] bg-teal-900/50 text-teal-400 border border-teal-800/50 px-2 py-0.5 rounded-full">Admin</span>
+            <span id="user-display-role" class="text-[10px] bg-teal-900/50 text-teal-400 border border-teal-800/50 px-2 py-0.5 rounded-full">Admin</span>
           </div>
           <button 
             id="btn-logout" 
             onclick="handleLogout()" 
-            class="text-slate-400 hover:text-red-400 p-1.5 rounded transition-colors" 
+            class="text-slate-400 hover:text-red-400 p-1.5 rounded transition-colors text-xs font-bold" 
             title="Cerrar Sesión"
           >
             🚪 Exit
@@ -499,7 +565,7 @@
   <!-- LÓGICA DE PROGRAMACIÓN CON ALTO SOPORTE DE PERSISTENCIA Y RUTAS -->
   <!-- ========================================================= -->
   <script>
-    // --- DATOS QUEMADOS INICIALES (SEEDING) ---
+    // --- DATOS QUEMADOS INICIALES (SEEDING DE LA VETERINARIA) ---
     const initialPets = [
       { name: "Max", species: "Perro", age: "3", owner: "Fernando Cajias" },
       { name: "Luna", species: "Gato", age: "2", owner: "Ariel Lopez" },
@@ -516,6 +582,18 @@
       { name: "Vacuna Triple Felina", category: "Vacunas", stock: "15", unit: "Frascos" },
       { name: "FleaOut Antipulgas", category: "Antiparasitarios", stock: "40", unit: "Ampollas" }
     ];
+
+    // --- BASE DE DATOS DE USUARIOS REGISTRADOS ---
+    // Si no existen usuarios, definimos la cuenta inicial predeterminada (fcajias, clave: 12345)
+    let users = JSON.parse(localStorage.getItem('users')) || [
+      { name: "Fernando Cajias", email: "fdv.cajias@yavirac.edu.ec", password: "12345", role: "Admin" }
+    ];
+
+    // Asegurar que el usuario por defecto siempre esté en el arreglo
+    if (!users.some(u => u.email === "fdv.cajias@yavirac.edu.ec")) {
+      users.push({ name: "Fernando Cajias", email: "fdv.cajias@yavirac.edu.ec", password: "12345", role: "Admin" });
+      localStorage.setItem('users', JSON.stringify(users));
+    }
 
     // Variables de Estado en Memoria (Cargadas desde localStorage)
     let pets = JSON.parse(localStorage.getItem('pets')) || [];
@@ -543,24 +621,34 @@
       const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
       if (!isLoggedIn) {
-        // Forzar sección de Login si no está autenticado
-        window.location.hash = '#login';
-        document.getElementById('login-section').classList.remove('hidden');
+        // Si no está logueado, sólo permitimos ver #login o #register
         document.getElementById('main-platform').classList.add('hidden');
+        
+        if (hash === '#register') {
+          document.getElementById('login-section').classList.add('hidden');
+          document.getElementById('register-section').classList.remove('hidden');
+        } else {
+          window.location.hash = '#login';
+          document.getElementById('login-section').classList.remove('hidden');
+          document.getElementById('register-section').classList.add('hidden');
+        }
       } else {
-        // Si está autenticado e intenta ir a #login, lo redirigimos al #dashboard
-        if (hash === '#login') {
+        // Si está autenticado e intenta ir a #login o #register, lo redirigimos al #dashboard
+        if (hash === '#login' || hash === '#register') {
           window.location.hash = '#dashboard';
           return;
         }
 
         // Mostrar panel principal
         document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('register-section').classList.add('hidden');
         document.getElementById('main-platform').classList.remove('hidden');
 
         // Actualizar datos del usuario actual en pantalla
         const loggedUser = localStorage.getItem('loggedUser') || 'fdv.cajias@yavirac.edu.ec';
+        const loggedUserRole = localStorage.getItem('loggedUserRole') || 'Admin';
         document.getElementById('user-display-email').innerText = loggedUser;
+        document.getElementById('user-display-role').innerText = loggedUserRole;
 
         // Ocultar todas las secciones operacionales
         const views = ['view-dashboard', 'view-mascotas', 'view-citas', 'view-inventario'];
@@ -616,22 +704,63 @@
     // --- COMPONENTE DE AUTENTICACIÓN ---
     function handleLogin(event) {
       event.preventDefault();
-      const email = document.getElementById('login-email').value;
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      // Buscar si el usuario existe y coincide con las credenciales
+      const user = users.find(u => u.email === email && u.password === password);
       
+      if (!user) {
+        showNotification('❌ Credenciales inválidas. Intente de nuevo.');
+        return;
+      }
+
       // Guardar estados en el navegador
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('loggedUser', email);
+      localStorage.setItem('loggedUserRole', user.role || 'Admin');
       
-      showNotification('Inicio de sesión exitoso. Cargando paneles...');
+      showNotification(`¡Bienvenido, ${user.name}!`);
       
       // Mover URL al Dashboard
       window.location.hash = '#dashboard';
+    }
+
+    // --- COMPONENTE DE REGISTRO ---
+    function handleRegister(event) {
+      event.preventDefault();
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const role = document.getElementById('reg-role').value;
+
+      // Validar si el correo ya existe
+      if (users.some(u => u.email === email)) {
+        showNotification('❌ Error: Este correo ya se encuentra registrado.');
+        return;
+      }
+
+      // Añadir usuario a la base de datos local
+      users.push({ name, email, password, role });
+      localStorage.setItem('users', JSON.stringify(users));
+
+      showNotification('¡Cuenta registrada con éxito! Ya puedes iniciar sesión.');
+      
+      // Limpiar formulario de registro
+      document.getElementById('register-form').reset();
+
+      // Redirigir al Login mediante HASH
+      window.location.hash = '#login';
     }
 
     function handleLogout() {
       // Limpiar estados de sesión en localStorage
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('loggedUser');
+      localStorage.removeItem('loggedUserRole');
+      
+      // Limpiar inputs de Login
+      document.getElementById('login-form').reset();
       
       showNotification('Sesión institucional finalizada.');
       
